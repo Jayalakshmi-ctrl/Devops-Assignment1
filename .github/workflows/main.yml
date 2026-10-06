@@ -1,0 +1,33 @@
+name: Gym App Automation Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Pull Project Source Code
+      uses: actions/checkout@v4
+
+    - name: Configure Python Runner
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Environment Packages
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Stage 1 Automated Tests
+      run: |
+        pytest -v
+
+    - name: Run Docker Image Assembly Validation
+      run: |
+        docker build -t gym-app-engine:latest .
